@@ -8,7 +8,7 @@ const ErrorHandler = require("./middleware/error");
 
 
 app.use(cors({
-    origin: "http://localhost:300",
+    origin: "http://localhost:3000",
     credentials: true
 }))
 

@@ -5,12 +5,12 @@ const sendMail = require("../utils/sendMail");
 
 // send date to admin
 router.post(
-  "/contact",
+  "/sendmail",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { name, email, phoneNumber, message } = req.body;
       await sendMail({
-        email: process.env.SMPT_MAIL,
+        email: "shubhamraskar69@gmail.com",
         subject: "Mail form your site",
         message: `Hey ${process.env.SMPT_MAIL},
         You got mail from ${name} this ${email} address and ${phoneNumber}, ${message}.

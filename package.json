@@ -4,7 +4,8 @@
   "description": "this is a personal full stock website",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "author": "shubham_raskar",
   "license": "ISC",

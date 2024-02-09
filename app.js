@@ -8,7 +8,7 @@ const ErrorHandler = require("./middleware/error");
 
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "https://shubhamraskar.vercel.app/",
     credentials: true
 }))
 

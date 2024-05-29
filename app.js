@@ -10,7 +10,7 @@ const ErrorHandler = require("./middleware/error");
 // List of allowed origins
 const allowedOrigins = [
     'https://shubhamraskar.vercel.app',
-    'https://shubhamraskar00.github.io/',
+    'https://shubhamraskar00.github.io',
 ];
 
 const corsOptions = {

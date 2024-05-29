@@ -7,10 +7,25 @@ const bodyParser = require("body-parser");
 const ErrorHandler = require("./middleware/error");
 
 
-app.use(cors({
-    origin: "https://shubhamraskar.vercel.app",
-    credentials: true
-}))
+// List of allowed origins
+const allowedOrigins = [
+    'https://shubhamraskar.vercel.app',
+    'https://shubhamraskar00.github.io/',
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Check if the request's origin is in the allowed origins list
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true // Enable credentials
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 

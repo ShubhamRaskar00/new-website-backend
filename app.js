@@ -1,54 +1,71 @@
-// Import required modules
-const express = require('express');
-const app = express();
-const cors = require('cors');
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
-const ErrorHandler = require("./middleware/error");
+// --- START OF FILE app.js ---
 
+const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const ErrorHandler = require("./middleware/error"); // Assuming this is the path to your main error handler middleware
+const customErrorHandlerClass = require("./utils/ErrorHandler"); // Path to your ErrorHandler class
+
+// Load environment variables (only in development/testing)
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  require("dotenv").config({
+    path: ".env", // Ensure this path is correct relative to where you run node
+  });
+}
+
+const app = express();
 
 // List of allowed origins
 const allowedOrigins = [
-    'https://shubhamraskar.vercel.app',
-    'https://shubhamraskar00.github.io',
+  "https://shubhamraskar.vercel.app",
+  "https://shubhamraskar00.github.io",
 ];
 
 const corsOptions = {
-    origin: (origin, callback) => {
-        // Check if the request's origin is in the allowed origins list
-        if (allowedOrigins.includes(origin) || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true // Enable credentials
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests) OR if origin is in the list
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked origin: ${origin}`); // Log blocked origins
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Allow cookies/authorization headers
 };
 
+// --- Middleware Order ---
+
+// 1. CORS - Apply CORS middleware early
 app.use(cors(corsOptions));
 
-app.use(express.json());
-
-// cookies 
+// 2. Cookie Parser
 app.use(cookieParser());
 
-// Use body-parser middleware to parse form data 
-app.use(bodyParser.urlencoded({extended:true, limit: "50mb"}));
+// 3. Body Parsers (Modern Express)
+// Use express built-in parsers instead of 'body-parser' package
+app.use(express.json({ limit: "50mb" })); // For parsing application/json
+app.use(express.urlencoded({ extended: true, limit: "50mb" })); // For parsing application/x-www-form-urlencoded
 
-// config
-if(process.env.NODE_ENV !== "PRODUCTION"){
-    require("dotenv").config({
-        path: "config/.env",
-    })
-}
+// --- Routes ---
+const contactRoutes = require("./controller/contact"); // Use a more descriptive variable name
+app.use("/api/contact", contactRoutes); // Mount the contact routes
 
-// import routes
-const contact =  require("./controller/contact");
+// --- Root/Health Check Route (Optional but Recommended) ---
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "UP", message: "Server is running" });
+});
 
-// Define a route for the root URL
-app.use("/api/contact", contact);
+// --- Not Found Handler (Optional) ---
+// Catch requests to routes that don't exist
+app.use((req, res, next) => {
+  // Use your custom ErrorHandler class here
+  next(new customErrorHandlerClass(`Route not found: ${req.originalUrl}`, 404));
+});
 
-// it's for ErrorHandling
-app.use(ErrorHandler);
+// --- Global Error Handler ---
+// This MUST be the LAST middleware
+app.use(ErrorHandler); // Use the error handling middleware from middleware/error.js
 
-module.exports = app
+module.exports = app;
+// --- END OF FILE app.js ---

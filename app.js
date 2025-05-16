@@ -19,7 +19,7 @@ const app = express();
 const allowedOrigins = [
   "https://shubhamraskar.vercel.app",
   "https://shubhamraskar00.github.io",
-  "http://microvision.whf.bz/"
+  "http://microvision.whf.bz"
 ];
 
 const corsOptions = {
